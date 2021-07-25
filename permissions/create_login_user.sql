@@ -3,19 +3,19 @@ GO
 
 CREATE LOGIN sqlUser1 WITH
  PASSWORD = 'xxxxxxxxxxxxxx'
-,DEFAULT_DATABASE=testdb1
+,DEFAULT_DATABASE=AdventureWorks2019
 ,CHECK_EXPIRATION=OFF
 
 GO
 
 CREATE LOGIN ddlUser1 WITH
  PASSWORD = 'xxxxxxxxxxxxxx'
-,DEFAULT_DATABASE=testdb1
+,DEFAULT_DATABASE=AdventureWorks2019
 ,CHECK_EXPIRATION=OFF
 
 GO
 
-USE testdb1
+USE AdventureWorks2019
 GO
 
 -- password for USER is not needed since LOGIN already is password protected

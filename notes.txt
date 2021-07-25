@@ -1,0 +1,24 @@
+For the first dive, I used AWS RDS for SQL server, as I just wanted to try out some basic stuff with this RDBMS that was rather new to me. I had a little bit exposure to Sybase 2 decades ago. So that was a long time.
+
+I could use mssql-cli and Azure Data Studio to access the database instance and even created some stored procedures. But further exploration was hampered by the fact that the RDS service did not allowed me to login as "sa". I wanted to import the AdventureWorks from backup file and RDS does not allow the transfer of .bak file onto the database server. Since for RDS service, OS login is not supported. Although AWS supports uploading of CSV files by providing a set of stored procedures, it was really no fun. For each CSV file, I would have to repeat these steps
+
+1. Update file to S3
+2a. From SQL client to kick up a transfer job (from S3 to SQL server): exec msdb.dbo.rds_download_from_s3
+2b. From SQL client view the job status (12 is the job id emitted by step above): SELECT * FROM msdb.dbo.rds_fn_task_status(null, 12)
+2c. From SQL client view the file status (12 is the job id emitted by step above): SELECT * FROM msdb.dbo.rds_fn_list_file_details(12)
+
+This was just so clumsy! The AdventureWorks sample database contains hundreds of CSV files. Although I could script, doing it this way still looked very stupid. That took me to the next action. I had the idea to rent a Windows server VM. SQL server can also run on Linux. The reason I chose Windows was that I want to use SQL Server Management Studio, which is only available on Linux and I do not have a Windows PC.
+
+Installing Sql Server 2019 on a EC2 Windows Server went through smoothly. Connecting the Management Studio to the DB engine from the local machine was no problem neither - I accessed the Windows VM via Remote Desktop on Mac. Both Windows and SQL authorization work file.
+
+The trouble was to connect from my Mac to the DB engine to this SQL server. I have done these:
+* add AWS firewall rule for the Mac public IP for port 1433. The IP must be OK since I could connect via RDP.
+* Enabled TCP from the Server Configuration Manager
+* Checked in Management Studio that connection from remote clients is allowed
+* Checked in SQL server log that port 1433 is being listened on
+
+Nevertheless, connecting either mssql-cli or Azure Data Studio from my Mac always ended up in TCP connection error. 
+
+Finally, I decided to rent a Linux Redhat VM. The steps described in 
+	https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-red-hat?view=sql-server-ver15
+succeeded like a breeze. I was really impressed. Just after one hour, half of it was wasted on finding out the proper IP to unfirewall on the Linux instance, I could connect Management Studio on the Windows VM to Linux SQL server!
