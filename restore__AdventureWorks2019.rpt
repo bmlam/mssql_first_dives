@@ -1,0 +1,25 @@
+﻿5 percent processed.
+10 percent processed.
+15 percent processed.
+20 percent processed.
+25 percent processed.
+30 percent processed.
+35 percent processed.
+40 percent processed.
+45 percent processed.
+50 percent processed.
+55 percent processed.
+60 percent processed.
+65 percent processed.
+70 percent processed.
+75 percent processed.
+80 percent processed.
+85 percent processed.
+90 percent processed.
+95 percent processed.
+100 percent processed.
+Processed 26344 pages for database 'AdventureWorks2019', file 'AdventureWorks2017' on file 1.
+Processed 2 pages for database 'AdventureWorks2019', file 'AdventureWorks2017_log' on file 1.
+RESTORE DATABASE successfully processed 26346 pages in 3.541 seconds (58.126 MB/sec).
+
+Completion time: 2021-07-25T17:14:27.0722886+00:00
