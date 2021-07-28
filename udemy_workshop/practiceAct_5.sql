@@ -123,6 +123,21 @@ CREATE CLUSTERED INDEX [PK_DimDate_DateKey]
 	ON DimDate( FiscalYear ) 
 	ON place_split_by_year_number( FiscalYear)
 ;
-
+-- the following does NOT show the distribution of the data rows into partitions / filegroups - it is just testing the partiioning function, nothing more!
 SELECT $partition.split_by_year_number( FiscalYear) part_no, * FROM DimDate WHERE DayNumberOfYear=1 ORDER BY datekey 
 ;
+
+-- %%physloc%% is like Oracle rowid 
+SELECT FiscalYear, %%physloc%% AS [%%physloc%%], sys.fn_PhysLocFormatter(%%physloc%%) AS [File:Page:Slot] FROM DimDate WHERE DayNumberOfYear=1 ORDER BY datekey 
+/* FiscalYear,%%physloc%%,File:Page:Slot
+2005,0x1817000001000000,(1:5912:0)
+2006,0x1D17000001003100,(1:5917:49)
+2007,0x2317000001002B00,(1:5923:43)
+2008,0x2917000001002400,(1:5929:36)
+2009,0x2F17000001001F00,(1:5935:31)
+2010,0x3517000001001700,(1:5941:23)
+2010,0x4017000001000C00,(1:5952:12)
+2011,0x4E00000003000C00,(3:78:12)
+2012,0x5400000003000600,(3:84:6)
+2013,0x5A00000003000000,(3:90:0)
+ */

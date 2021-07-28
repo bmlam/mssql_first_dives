@@ -1,28 +1,6 @@
 -- select * from dbo.v_column_info where object_id = object_id( 'dbo.emp')
 
-SELECT c.object_id
-    ,c.name column_name
-    ,t.Name data_type
-    ,c.max_length
-    ,c.precision 
-    ,c.scale 
-    ,c.is_nullable nullible
-    ,CASE 
-        WHEN t.name LIKE '%varchar' THEN t.name + '(' + CONVERT( VARCHAR, c.max_length  ) + ')'
-        WHEN t.name LIKE 'decimal' THEN t.name + '(' + CONVERT( VARCHAR, c.[precision]  ) + ',' + CONVERT( VARCHAR, c.[scale]  ) + ')'
-        ELSE t.name 
-    END AS data_type_specs 
-    ,ISNULL(i.is_primary_key, 0) is_pk
-FROM    
-    sys.columns c
-INNER JOIN 
-    sys.types t ON c.user_type_id = t.user_type_id
-LEFT OUTER JOIN 
-    sys.index_columns ic ON ic.object_id = c.object_id AND ic.column_id = c.column_id--
-LEFT OUTER JOIN 
-    sys.indexes i ON ic.object_id = i.object_id AND ic.index_id = i.index_id
-WHERE c.object_id = object_id( 'dbo.emp')
-    ;
+
 
 select * from emp
 
