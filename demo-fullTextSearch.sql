@@ -1,0 +1,13 @@
+use AdventureWorks2019
+GO
+
+CREATE FULLTEXT CATALOG AdvWorksFTSCat;
+
+CREATE FULLTEXT INDEX ON Person.Address
+( Address TYPE COLUMN AddressLine1 LANGUAGE 2057
+) KEY INDEX Pk_Addres_AddressId
+ON AdvWorksFTSCat
+WITH CHANGE_TRACKING AUTO 
+GO
+
+ 

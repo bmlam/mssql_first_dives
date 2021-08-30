@@ -11,7 +11,7 @@ select tab.schema_id, schema_name(tab.schema_id) as schema_name,
            and ep.minor_id = 0
            and ep.class_desc = 'OBJECT_OR_COLUMN'
 WHERE 1=1
-  AND tab.name lIKE '%Prod%'
+  AND tab.name lIKE '%Employee%'
   order by schema_name,
         table_name
         ;
@@ -24,17 +24,21 @@ WITH tab_rows_ AS (
 )
 SELECT tab.name TableName
     , schema_name(tab.schema_id) as schema_name
+    ,ps.object_id ps_object_id
+    ,object_name( ps.object_id) SegmentName
+    ,ix.name IndexName
     ,CASE ps.index_id WHEN 0 THEN 'Table' WHEN 1 THEN 'ClustIx' ELSE 'otherIx' END AS SegmentType
     ,ps.index_id tab_index_id
-    ,tab.name TableName, tab.create_date tableCreDate
+    ,tab.create_date tableCreDate
     ,tr.rows table_rows 
     ,ROUND(ps.used_page_count * 8 / 1024.0, 2) SegmentMbUsed
     ,ps.used_page_count SegmentPages
 FROM  sys.tables tab 
 LEFT JOIN tab_rows_ tr ON tr.object_id = tab.object_id 
 LEFT JOIN sys.dm_db_partition_stats ps ON ps.object_id = tab.object_id
+LEFT JOIN sys.indexes ix ON ix.object_id = tab.object_id -- index does not have any object id. so object_id is always the table's object_id
 WHERE 1=1
-  AND tab.name LIKE '%Product%'
+  AND tab.name LIKE '%Internet%'
 ;
 -- column information 
 SELECT c.object_id
@@ -60,12 +64,45 @@ LEFT OUTER JOIN
     sys.indexes i ON ic.object_id = i.object_id AND ic.index_id = i.index_id
 WHERE c.object_id = object_id( 'dbo.emp')
     ;
-SELECT ps.index_id tab_index_id, * 
+SELECT ps.index_id tab_index_id, ps.* 
 FROM  sys.tables tab 
 LEFT JOIN sys.dm_db_partition_stats ps ON ps.object_id = tab.object_id
 WHERE 1=1
   AND tab.name LIKE '%Product%'
 ;
-select * from newProduct1
+-- who can do what
+select prin.name grantee
+, perm.grantor_principal_id grantor_id
+, prin.principal_id grantee_id
+, prin.type_desc grantee_type
+, perm.permission_name 
+, prin.is_disabled
+, prin.is_fixed_role
+, perm.class_desc perm_class
+FROM sys.server_permissions perm
+JOIN sys.server_principals prin ON prin.principal_id = perm.grantee_principal_id
 
-SELECT CASE ps.index_id WHEN 0 THEN 'Table' WHEN 1 THEN 'ClustIx' ELSE 'otherIx' END AS SegmentType FROM  sys.tables tab LEFT JOIN sys.dm_db_partition_stats ps ON ps.object_id = tab.object_id
+SELECT * FROM  sys.dm_db_partition_stats ps WHERE object_id = object_id ( 'dbo.FactInternetSales')
+SELECT * from sys.indexes
+
+-- check if full text search feature installed
+SELECT FULLTEXTSERVICEPROPERTY('IsFullTextInstalled')
+
+select object_name( object_id) object_name, * from sys.fulltext_indexes
+;
+-- find indexed (materialized) views
+select schema_name(v.schema_id) as schema_name,
+       v.name as view_name,
+       i.name as index_name,
+       m.definition
+from sys.views v
+join sys.indexes i
+     on i.object_id = v.object_id
+  --   and i.index_id = 1
+--  and i.ignore_dup_key = 0
+join sys.sql_modules m
+     on m.object_id = v.object_id
+WHERE 1=1
+ -- AND i.object_id = object_id( 'HumanResources.JobCandidate')
+order by schema_name,
+         view_name;

@@ -1,0 +1,5 @@
+copy and paste if needed
+ampersand @ 
+backslash \
+square brackets [ ]
+curly brackets  { }
